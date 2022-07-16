@@ -1,0 +1,207 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Aviso</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+    <div class="content">
+        <div class="nav">
+            <div class="nav_title">¡Buen día, {{user.user}}!</div>
+            <div>
+                <div><a href="/dashboard" class="btn btn_def">Volver</a></div>
+                <div><a href="/logout" class="btn btn_def">Cerrar Sesión</a></div>
+            </div>  
+        </div>
+        <div class="containers_little">
+            <div class="container_little">
+                <div class="btn_finta btn_arriba btn_publicacion"> Publicación </div>
+                <div class="aviso_unit">
+                    <div>
+                        <div class="container_title">
+                            "{{post.title}}"
+                        </div>
+                    </div>
+                    <div class="container_description"> 
+                        <br>
+                        <div class="word_wrap">{{post.content}}</div>
+                        <br>
+                        <b>{% if post.hour_int < 12 %}{{post.updated_at_object.hour}}:{{post.updated_at_object.minute}} am{%else%}{{"0" + (post.hour_int - 12)|string}}:{{post.updated_at_object.minute}} pm{%endif%} · {{post.updated_at_object.day}}/{{post.updated_at_object.month}}/{{post.updated_at_object.year[2:4]}}</b>
+                    </div>
+                </div>
+                <div class="btn_abajo btn_publicacion btn_finta comentario_opciones">
+                    
+                    {% set list = [] %}
+                        {% for reaction_post in reactions_post %}
+                            {% if reaction_post["user_id"] == user.id %}
+                                <div style="display:none">{{list.append(reaction_post)}}</div>
+                            {% endif %}
+                        {% endfor %}
+                    {% if list|length == 1 %}
+                        <a href="/post/quit/reaction/{{post.id}}/1">
+                            <div class="btn_little_sides_start btn_like">
+                                <img src="https://cdn2.iconfinder.com/data/icons/pittogrammi/142/80-512.png" alt="me gusta" class="rct_like">
+                            </div>    
+                            <div class="btn_little_sides_end btn_like">
+                                {{reactions_post|length}}
+                            </div>
+                        </a>
+                    {% else %}
+                        <a href="/post/add/reaction/{{post.id}}/1">
+                            <div class="btn_little_sides_start btn_def">
+                                <img src="https://cdn2.iconfinder.com/data/icons/pittogrammi/142/80-512.png" alt="me gusta" class="rct_like">
+                            </div>    
+                            <div class="btn_little_sides_end btn_like">
+                                {{reactions_post|length}}
+                            </div>
+                        </a>
+                    {% endif %}
+                    <div></div>
+                </div>
+            </div>
+            <div class="container_little">
+                <div class="btn_finta btn_arriba btn_comentarios"> Comentarios</div>
+                <div class="comentario_unit">
+                {% for comment in comments %}
+                    <div class="comment_and_subcomments">
+                        <div class="comentario">
+                            <div>
+                                <div class="container_title_little">
+                                    <div>
+                                        <b>{{comment.user_name}}</b> dice:
+                                    </div>
+                                    {% if user.id == comment.user_id %}
+                                        <div class="btn_little_X btn_ubi" onclick="eliminarcomentario({{comment.id}}, {{post.id}})">
+                                            X
+                                        </div>
+                                    {% else %}
+                                        <div></div>
+                                    {% endif %}
+                                </div>
+                            </div>
+                            <div class="container_description_little"> 
+                                <div class="word_wrap">{{comment.content}}</div>
+                                <b>{% if comment.hour_int < 12 %}{{comment.updated_at_object.hour}}:{{comment.updated_at_object.minute}} am{%else%}{{"0" + (comment.hour_int - 12)|string}}:{{comment.updated_at_object.minute}} pm{%endif%} · {{comment.updated_at_object.day}}/{{comment.updated_at_object.month}}/{{comment.updated_at_object.year[2:4]}}</b>
+                            </div>
+                        </div>
+                        <div class="comentario_opciones btn_comentarios">
+    
+                            {% set reactions_for_comment = [] %}
+                            {% for reaction_comment_post in reactions_comments_post %}
+                                {% if reaction_comment_post["comment_id"] == comment.id %}
+                                    <div style="display:none">{{reactions_for_comment.append(reaction_comment_post)}}</div>
+                                {% endif %}
+                            {% endfor %}
+    
+                            {% set list = [] %}
+                            {% for reaction_for_comment in reactions_for_comment %}
+                                {% if reaction_for_comment["user_id"] == user.id %}
+                                    <div style="display:none">{{list.append(reaction_for_comment)}}</div>
+                                {% endif %}
+                            {% endfor %}
+    
+                            {% if list|length == 1 %}
+    
+                            <a href="/comment/quit/reaction/{{post.id}}/{{comment.id}}/1">
+                                <div class="btn_little_sides_start btn_like">
+                                    <img src="https://cdn2.iconfinder.com/data/icons/pittogrammi/142/80-512.png" alt="me gusta" class="rct_like">
+                                </div>    
+                                <div class="btn_little_sides_end btn_like">
+                                    {{reactions_for_comment|length}}
+                                </div>
+                            </a>
+                            {% else %}
+    
+                            <a href="/comment/add/reaction/{{post.id}}/{{comment.id}}/1">
+                                <div class="btn_little_sides_start btn_def">
+                                    <img src="https://cdn2.iconfinder.com/data/icons/pittogrammi/142/80-512.png" alt="me gusta" class="rct_like">
+                                </div>    
+                                <div class="btn_little_sides_end btn_like">
+                                    {{reactions_for_comment|length}}
+                                </div>
+                            </a>
+    
+                            {% endif %}
+                            <div class="btn_little btn_publicacion" onclick="apareceinput(this)">
+                                responder
+                            </div>
+                        </div>
+                        <div class="subcomentarios">
+
+                            {% set subcomments_for_comment = [] %}
+                            {% for subcomment in subcomments %}
+                                {% if subcomment.comment_id == comment.id %}
+                                    <div style="display:none">{{subcomments_for_comment.append(subcomment)}}</div>
+                                {% endif %}
+                            {% endfor %}
+    
+                            {% for subcomment_for_comment in subcomments_for_comment %}
+                                <div class="subcomentario">
+                                    <div>
+                                        <div class="container_title_little">
+                                            <div>
+                                                <b>{{subcomment_for_comment.user_name}}</b> dice:
+                                            </div>
+                                            {% if user.id == subcomment_for_comment.user_id %}
+                                                <div class="btn_little_X btn_ubi" onclick="eliminarsubcomentario({{subcomment_for_comment.id}}, {{post.id}})">
+                                                    X
+                                                </div>
+                                            {% else %}
+                                                <div></div>
+                                            {% endif %}
+                                        </div>
+                                    </div>
+                                    <div class="container_description_little"> 
+                                        <div class="word_wrap">{{subcomment_for_comment.content}}</div>
+                                        <b>02:02 am · 29/03/22</b>
+                                    </div>
+                                </div>
+                                <div class="subcomentario_opciones btn_comentarios" id="last_border">
+                                    <a>
+                                        <div class="btn_little_sides_start btn_def">
+                                            <img src="https://cdn2.iconfinder.com/data/icons/pittogrammi/142/80-512.png" alt="me gusta" class="rct_like">
+                                        </div>    
+                                        <div class="btn_little_sides_end btn_like">
+                                            2
+                                        </div>
+                                    </a>
+                                    <div>
+                                        
+                                    </div>
+                                </div>
+                            {% endfor %}
+                            <div class="btn_finta_subcomment btn_comentarios" id="last_border">
+                                <form action="/create/subcomment" method="post" class="comentario_form">
+                                    <input type="hidden" name="user_id" value="{{user.id}}">
+                                    <input type="hidden" name="post_id" value="{{post.id}}">
+                                    <input type="hidden" name="comment_id" value="{{comment.id}}">
+                                    <div>
+                                        <textarea name="content" id="content" class="comentario_content_subcomment" placeholder="Escriba aquí su respuesta"></textarea>
+                                    </div>
+                                    <input type="submit" class="btn btn_com" value="Comentar" onclick="desapareceinput(this)">
+                                </form>
+                            </div>
+                        </div>
+                    </div>
+                {% endfor %}
+            </div>
+            <div class="btn_finta btn_abajo btn_comentarios">
+                <form action="/create/comment" method="post" class="comentario_form">
+                    <input type="hidden" name="user_id" value="{{user.id}}">
+                    
+                    <!-- Aqui estamos dándole el category_id al post automaticamente de "panas" -->
+                    <input type="hidden" name="post_id" value="{{post.id}}">
+                    <div>
+                        <textarea name="content" id="content" class="comentario_content" placeholder="Escriba aquí su comentario"></textarea>
+                    </div>
+                    <input type="submit" class="btn btn_com" value="Comentar">
+                </form>
+            </div>
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/aviso_pana.js') }}" ></script>
+</body>
+</html>

@@ -1,0 +1,48 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Publicaciones Panas</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+    <div class="content">
+        <div class="nav">
+            <div class="nav_title">Todos los avisos Panas</div>
+            <div>
+                <div><a href="/dashboard" class="btn btn_def">Volver</a></div>
+                <div><a href="/logout" class="btn btn_def">Cerrar Sesión</a></div>
+            </div>  
+        </div>
+        <div class="containers_little">
+            {% for post_pana in posts_panas %}
+
+            <div class="container_little">
+                <div class="aviso">
+                    <div>
+                        <div class="container_title_little_publi">
+                            "{{post_pana.title}}"
+                        </div>
+                    </div>
+                    <div class="container_description_little"> 
+                        <div class="word_wrap">{{post_pana.content}}</div>
+                        <div>
+                            <b>{% if post_pana.hour_int < 12 %}{{post_pana.updated_at_object.hour}}:{{post_pana.updated_at_object.minute}} am{%else%}{{"0" + (post_pana.hour_int - 12)|string}}:{{post_pana.updated_at_object.minute}} pm{%endif%} · {{post_pana.updated_at_object.day}}/{{post_pana.updated_at_object.month}}/{{post_pana.updated_at_object.year[2:4]}}</b>
+                            <div class="btn_little_X btn_ubi" onclick="eliminarpublicacion({{post_pana.id}})">
+                                X
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <a href="/post/panas/{{post_pana.id}}"><div class="btn btn_abajo btn_publicacion"> ver {% if post_pana.cant_comments > 1 %} {{post_pana.cant_comments}} comentarios {% elif post_pana.cant_comments == 1 %} 1 comentario {% else %} publicación {% endif %} </div></a>
+            </div>
+
+            {% endfor %}
+
+        </div>
+    </div>
+    <script src="{{ url_for('static', filename='js/avisos_panas.js') }}" ></script>
+</body>
+</html>

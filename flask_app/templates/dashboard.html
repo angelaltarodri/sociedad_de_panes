@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Dashboard</title>
+    <link rel="stylesheet" type="text/css" href="{{url_for('static', filename='css/style.css')}}">
+</head>
+<body>
+    <div class="content">
+        <div class="nav">
+            <div class="nav_title">¡Bienvenid@, {{user.user}}!</div>
+
+            <div><a href="/logout" class="btn btn_def">Cerrar Sesión</a></div>
+        </div>
+        <div class="containers">
+            <div class="container">
+                <div class="container_title">SOMOS SOCIEDAD</div>
+                <div class="container_description" >de Panas<sup><small>TM</small></sup>, y hoy estamos en</div>
+                <div class="ubicacion">
+                    <div class="btn btn_ubi"> 
+                        {% for location in locations %} 
+                            {% if location.day == weekday %}
+                            {{location.location}}
+                            {% endif %}
+                        {% endfor %} 
+                    </div> 
+                    <div>:</div>
+                    <div class="btn btn_ubi">
+                        {% for location in locations %} 
+                            {% if location.day == weekday %}
+                            {{location.reference}}
+                            {% endif %}
+                        {% endfor %} 
+                    </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="container_title">NEGOCIOS SOCIOS</div>
+                <div class="container_description"> Consulta su info  </div>
+                <div class="negocios">
+                    <div class="btn btn_socio"> El Chico de los Panes </div> 
+                    <div class="btn btn_socio"> Alfajorsísimos </div>
+                </div>
+            </div>
+
+            <div class="container">
+                <div class="container_title">AVISOS PANAS</div>
+                <div class="avisoprincipal">
+                    <div>
+                        <div class="container_title">
+                            "{{lp.title}}" 
+                        </div>
+                    </div>
+                    <div class="container_description"> 
+                        <div class="word_wrap">{{lp.content}}</div> <br>
+                        <b>{% if lp.hour_int < 12 %}{{lp.updated_at_object.hour}}:{{lp.updated_at_object.minute}} am{%else%}{{lp.hour_int - 12}}:{{lp.updated_at_object.minute}} pm{%endif%} · {{lp.updated_at_object.day}}/{{lp.updated_at_object.month}}/{{lp.updated_at_object.year[2:4]}}</b>
+                    </div>
+                    <a href="/post/panas/{{lp.id}}"><div class="btn btn_pana "> ver {% if lp.cant_comments > 1 %} {{lp.cant_comments}} comentarios {% elif lp.cant_comments == 1 %} 1 comentario {% else %} publicación {% endif %} </div> </a>
+                </div>
+                <a href="/all/post/panas"><div class="btn btn_abajo btn_publicacion"> Ver anteriores avisos </div></a>
+            </div>
+        </div>
+        {% if user.id == 4 %}
+        <div class="footer">
+            <div><a href="/new/post" class="btn btn_def">Add Post Pana</a></div>
+
+            <div><a class="btn btn_def">Recuperar último post</a></div>
+        </div>
+        {% else %}
+        <div class="footer">
+            <div><a class="btn btn_def">Contáctanos</a></div>
+
+            <div><a class="btn btn_def"></a></div>
+        </div>
+        {% endif %}
+    </div>
+    <script src="{{ url_for('static', filename='js/dashboard.js') }}" ></script>
+</body>
+</html>
